@@ -133,6 +133,5 @@ app.*.symbols
 
 
 # Bitrise-related
-bitrise.yml
 flutter_junit_test_results.xml
 Session*.md
