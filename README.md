@@ -42,7 +42,7 @@
     - [iOS Code signing](https://devcenter.bitrise.io/en/code-signing/ios-code-signing.html)
 - [EnvVar設定（環境関数設定）](https://devcenter.bitrise.io/en/builds/environment-variables.html
 )
-- [シークレット設定（証明書など）](https://devcenter.bitrise.io/en/builds/secrets.html)
+- [シークレット設定（パスワードなど）](https://devcenter.bitrise.io/en/builds/secrets.html)
 - [primary workflowの設定](https://devcenter.bitrise.io/en/steps-and-workflows.html)
 - [ビルドマシーン紹介](https://devcenter.bitrise.io/en/infrastructure/build-machines/build-machine-types.html)
 - [スタック設定](https://devcenter.bitrise.io/en/builds/configuring-build-settings/setting-the-stack-for-your-builds.html#setting-the-stack-in-the-workflow-editor)
@@ -66,6 +66,7 @@
 
 ## 4. ビルド
 - [Build Pipeline(Beta)の紹介](https://devcenter.bitrise.io/en/builds.html)
+- [Pipeline editor](https://damienbitrise.github.io/Pipeline-UI/)
 - [flutterビルド](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app)
 - [Build Artifact]()
 
