@@ -2,6 +2,25 @@ format_version: "11"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: flutter
 workflows:
+  android:
+    description: |
+      Builds project and runs tests.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
+    steps:
+    - activate-ssh-key@4: {}
+    - git-clone@7: {}
+    - flutter-installer@0:
+        inputs:
+        - version: 3.7.0
+        - is_update: "false"
+    - cache-pull@2: {}
+    - flutter-test@1:
+        inputs:
+        - project_location: $BITRISE_FLUTTER_PROJECT_LOCATION
+    - cache-push@2: {}
+    - deploy-to-bitrise-io@2: {}
   deploy:
     description: |
       Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
@@ -32,25 +51,6 @@ workflows:
         - ios_output_type: archive
     - cache-push@2: {}
     - deploy-to-bitrise-io@2: {}
-  primary:
-    description: |
-      Builds project and runs tests.
-
-      Next steps:
-      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
-    steps:
-    - activate-ssh-key@4: {}
-    - git-clone@7: {}
-    - flutter-installer@0:
-        inputs:
-        - version: 3.7.0
-        - is_update: "false"
-    - cache-pull@2: {}
-    - flutter-test@1:
-        inputs:
-        - project_location: $BITRISE_FLUTTER_PROJECT_LOCATION
-    - cache-push@2: {}
-    - deploy-to-bitrise-io@2: {}
   ios:
     description: |
       Builds project and runs tests.
@@ -70,7 +70,7 @@ workflows:
         - project_location: $BITRISE_FLUTTER_PROJECT_LOCATION
     - cache-push@2: {}
     - deploy-to-bitrise-io@2: {}
-  android:
+  primary:
     description: |
       Builds project and runs tests.
 
@@ -98,3 +98,14 @@ app:
   - opts:
       is_expand: false
     BITRISE_FLUTTER_PROJECT_LOCATION: .
+trigger_map:
+- push_branch: release
+  workflow: deploy
+- push_branch: '*android*'
+  workflow: android
+- pull_request_source_branch: android*
+  workflow: android
+  pull_request_target_branch: main
+- pull_request_source_branch: ios*
+  pull_request_target_branch: main
+  workflow: ios

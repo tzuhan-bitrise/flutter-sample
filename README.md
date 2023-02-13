@@ -40,8 +40,7 @@
 - [Code signing設定](https://devcenter.bitrise.io/en/code-signing.html)
     - [Android Code signing](https://devcenter.bitrise.io/en/code-signing/android-code-signing.html)
     - [iOS Code signing](https://devcenter.bitrise.io/en/code-signing/ios-code-signing.html)
-- [EnvVar設定（環境関数設定）](https://devcenter.bitrise.io/en/builds/environment-variables.html
-)
+- [EnvVar設定（環境関数設定）](https://devcenter.bitrise.io/en/builds/environment-variables.html)
 - [シークレット設定（パスワードなど）](https://devcenter.bitrise.io/en/builds/secrets.html)
 - [primary workflowの設定](https://devcenter.bitrise.io/en/steps-and-workflows.html)
 - [ビルドマシーン紹介](https://devcenter.bitrise.io/en/infrastructure/build-machines/build-machine-types.html)
@@ -51,6 +50,8 @@
 
 
 ## 3. デバッグとテスト
+- [Rebuild/Advance紹介](https://devcenter.bitrise.io/en/builds/environment-variables.html#setting-a-custom-env-var-when-starting-a-build)
+
 - [ローカルデバッグコマンドツール紹介-Bitrise CLI](https://devcenter.bitrise.io/en/builds/build-data-and-troubleshooting/debugging-your-build-on-your-own-machine.html)
 - [リモートアクセス](https://devcenter.bitrise.io/en/builds/build-data-and-troubleshooting/remote-access.html)
 - [flutter Unitテスト](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#testing-a-flutter-app)
