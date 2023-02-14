@@ -1,4 +1,5 @@
-format_version: "11"
+---
+format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: flutter
 workflows:
@@ -14,11 +15,29 @@ workflows:
     - flutter-installer@0:
         inputs:
         - version: 3.7.0
-        - is_update: "false"
+        - is_update: 'false'
     - cache-pull@2: {}
     - flutter-test@1:
         inputs:
-        - project_location: $BITRISE_FLUTTER_PROJECT_LOCATION
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - file-downloader@1:
+        title: Key Property File Downloader
+        inputs:
+        - destination: "$BITRISE_SOURCE_DIR/android/key.properties"
+        - file_permission: '644'
+        - source: "$BITRISEIO_key_property_URL"
+    - file-downloader@1:
+        title: Keystore File Downloader
+        inputs:
+        - destination: "$BITRISE_SOURCE_DIR/android/app/upload-keystore.jks"
+        - file_permission: '600'
+        - source: "$BITRISEIO_ANDROID_KEYSTORE_URL"
+    - flutter-build@0:
+        inputs:
+        - platform: android
+    - sign-apk@1:
+        inputs:
+        - use_apk_signer: 'true'
     - cache-push@2: {}
     - deploy-to-bitrise-io@2: {}
   deploy:
@@ -36,17 +55,17 @@ workflows:
     - certificate-and-profile-installer@1: {}
     - flutter-installer@0:
         inputs:
-        - is_update: "false"
+        - is_update: 'false'
     - cache-pull@2: {}
     - flutter-analyze@0:
         inputs:
-        - project_location: $BITRISE_FLUTTER_PROJECT_LOCATION
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
     - flutter-test@1:
         inputs:
-        - project_location: $BITRISE_FLUTTER_PROJECT_LOCATION
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
     - flutter-build@0:
         inputs:
-        - project_location: $BITRISE_FLUTTER_PROJECT_LOCATION
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
         - platform: both
         - ios_output_type: archive
     - cache-push@2: {}
@@ -63,11 +82,25 @@ workflows:
     - flutter-installer@0:
         inputs:
         - version: 3.7.0
-        - is_update: "false"
+        - is_update: 'false'
+    - manage-ios-code-signing@1:
+        inputs:
+        - scheme: "$BITRISE_IOS_SCHEME"
+        - project_path: "$BITRISE_IOS_PROJECT_PATH"
+        - apple_team_id: DT2C2FZ7U2
+        - apple_service_connection: apple-id
     - cache-pull@2: {}
     - flutter-test@1:
         inputs:
-        - project_location: $BITRISE_FLUTTER_PROJECT_LOCATION
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    - flutter-build@0:
+        inputs:
+        - platform: ios
+    - xcode-archive@4:
+        inputs:
+        - scheme: "$BITRISE_IOS_SCHEME"
+        - automatic_code_signing: apple-id
+        - project_path: "$BITRISE_IOS_PROJECT_PATH"
     - cache-push@2: {}
     - deploy-to-bitrise-io@2: {}
   primary:
@@ -82,11 +115,11 @@ workflows:
     - flutter-installer@0:
         inputs:
         - version: 3.7.0
-        - is_update: "false"
+        - is_update: 'false'
     - cache-pull@2: {}
     - flutter-test@1:
         inputs:
-        - project_location: $BITRISE_FLUTTER_PROJECT_LOCATION
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
     - cache-push@2: {}
     - deploy-to-bitrise-io@2: {}
 meta:
@@ -97,11 +130,17 @@ app:
   envs:
   - opts:
       is_expand: false
-    BITRISE_FLUTTER_PROJECT_LOCATION: .
+    BITRISE_FLUTTER_PROJECT_LOCATION: "."
+  - opts:
+      is_expand: false
+    BITRISE_IOS_PROJECT_PATH: "./iOS/Runner.xcworkspace"
+  - opts:
+      is_expand: false
+    BITRISE_IOS_SCHEME: Runner
 trigger_map:
 - push_branch: release
   workflow: deploy
-- push_branch: '*android*'
+- push_branch: "*android*"
   workflow: android
 - pull_request_source_branch: android*
   workflow: android

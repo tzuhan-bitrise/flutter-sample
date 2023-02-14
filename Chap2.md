@@ -128,6 +128,22 @@ Teamを自社のApple Developerチームに変更します。
 
 ## ワークフロー設定
 ワークフローに`Certificate and profile installer`ステップを追加します。
+
+---
+## 追記
+FlutterプロジェクトでもiOSの自動プロビジョンニングプロファイル機能が使えます。
+
+自動プロビジョンニングプロファイル機能を使用するには、`Certificate and profile installer`ステップを削除し、`Manage iOS Code Signing`ステップを使用します。
+![](assets/2/i-7-4.png)
+- Connection method：apple-id
+- Project path: `$BITRISE_IOS_PROJECT_PATH`、 `Xcode Archive & Export for iOS` ステップで指定した変数と一緒
+- Scheme: `$BITRISE_IOS_SCHEME`、 `Xcode Archive & Export for iOS` ステップで指定した変数と一緒
+![](assets/2/i-7-5.png)
+- Developer portal team ID: Apple accountが複数のチームに所属している場合、teamIDの指定を忘れずに！
+
+
+---
+
 ![](assets/2/i-7.png)
 `Flutter Test`ステップの後ろのに`Flutter Build`ステップを追加します。
 - Platform: ios
