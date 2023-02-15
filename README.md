@@ -47,7 +47,7 @@
 - [スタック設定](https://devcenter.bitrise.io/en/builds/configuring-build-settings/setting-the-stack-for-your-builds.html#setting-the-stack-in-the-workflow-editor)
 - [workflow iOS サンプルレシピ](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-ios-apps.html)
 - [workflow flutter サンプルレシピ](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-cross-platform-apps.html)
-
+- [キャッシュの最適化](https://devcenter.bitrise.io/en/steps-and-workflows/generic-workflow-recipes/make-caching-efficient-for-pull-request-builds.html)
 
 ## 3. デバッグとテスト
 - [Rebuild/Advance紹介](https://devcenter.bitrise.io/en/builds/environment-variables.html#setting-a-custom-env-var-when-starting-a-build)
@@ -66,6 +66,8 @@
 - [音声関連のテスト](https://discuss.bitrise.io/t/how-to-create-a-virtual-audio-output-device-on-mac-os-stacks/1119)
 
 ## 4. ビルド
+- [Bitrise Start Buildステップ](https://devcenter.bitrise.io/en/steps-and-workflows/generic-workflow-recipes/start--parallel--builds-from-the-workflow.html)
+
 - [Build Pipeline(Beta)の紹介](https://devcenter.bitrise.io/en/builds.html)
 - [Pipeline editor](https://damienbitrise.github.io/Pipeline-UI/)
 - [flutterビルド](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app)
@@ -83,7 +85,11 @@
 ## 6. セキュリティ関連やサードパーティサービス統合などのトピック
 - [VPN設定](https://devcenter.bitrise.io/en/builds/connecting-to-a-vpn-during-a-build.html#using-cisco-vpn)
 - [ネットアクセス制限設定](https://devcenter.bitrise.io/en/infrastructure/build-machines/configuring-your-network-to-access-our-build-machines.html)
-- [Slack統合](https://devcenter.bitrise.io/en/builds/configuring-build-settings/configuring-slack-integration.html)
+- Slack統合
+    - https://devcenter.bitrise.io/en/builds/configuring-build-settings/configuring-slack-integration.html
+    - https://devcenter.bitrise.io/en/steps-and-workflows/generic-workflow-recipes/-ios-android--send-build-status-to-slack.html
+    - QR code: https://devcenter.bitrise.io/en/steps-and-workflows/generic-workflow-recipes/-ios-android--send-qr-code-to-slack.html
+
 
 
 

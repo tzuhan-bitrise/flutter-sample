@@ -246,3 +246,64 @@ Bitrise側からのWebhookも登録可能です。
 ![](assets/2/5-1.png)
 （現状では、Wildcard以外の正規表現機能は備わっていません。）
 
+# [ビルドマシーン紹介](https://devcenter.bitrise.io/en/infrastructure/build-machines/build-machine-types.html)
+bitrise.ymlにMachine type IDでスタックを指定します。
+```
+meta:
+  bitrise.io:
+    stack: osx-xcode-14.2.x-ventura
+    machine_type_id: g2.4core
+```
+ワークフローごとに、使用するマシーンも設定可能。metaを該当ワークフロー内に定義するだけです。
+![](assets/2/6-0.png)
+```
+Workflows:
+  android:
+    ....
+    meta:
+      bitrise.io:
+        stack: linux-docker-android-20.04
+        machine_type_id: standard
+```
+
+# [スタック設定](https://devcenter.bitrise.io/en/builds/configuring-build-settings/setting-the-stack-for-your-builds.html#setting-the-stack-in-the-workflow-editor)
+
+[スタック更新ポリシー](https://devcenter.bitrise.io/en/infrastructure/build-stacks/stack-update-policy.html)
+- 新Xcodeバージョンが出た後、２日以内スタックの更新を約束します。
+- 最新のXcodeを使う場合、Xcode Edgeを指定すれば、最新バージョンのXcodeスタックが使えるようになります。
+- [System report](https://github.com/bitrise-io/bitrise.io/tree/master/system_reports)でインストールされているライブラリーリストを確認できます。
+- [各Xcodeステックで使えるシミュレーターのiOSバージョン一覧](https://devcenter.bitrise.io/en/infrastructure/build-stacks/stack-update-policy.html#available-simulator-runtimes-on-macos-stacks)。[Apple Xcodeの最低要件と対応SDK標準](https://developer.apple.com/support/xcode/)に従います。
+
+
+## M1ステックについて
+- Rosetta（Intel用のコマンドをApple SiliconベースのMac上で動作できるようにするプログラム）は内蔵されています。
+- スタック内のAndroid SDKはAndroid 32しかインストールされていません。（32からM1サポート）
+- homebrewのデフォルトパッケージインストール先は`/usr/local/bin/`, `/usr/local/share/`, `/usr/local/lib/`になります。（Intelスタックは`/usr/local/`）
+- IntelスタックとM1スタックのキャッシュは使い回せないので、切り替えた後、キャッシュの削除を忘れずに。（App設定画面→Buildタブ）
+- [M1スタックにAndroidエミュレータはサポートしていないため](https://devcenter.bitrise.io/en/infrastructure/build-stacks/apple-silicon-m1-stacks.html#android-emulation-is-unavailable)、Firebase Test Labステップの使用が必要
+- Montereyのフレームワークによるビルドハング不具合が報告されています。、こちらはVentura以上のバージョンの使用、もしくは[解消方法]](https://devcenter.bitrise.io/en/infrastructure/build-stacks/apple-silicon-m1-stacks.html#hanging-builds-issue)を使うことをお勧めします。
+
+## Xcodeスタックに関する既存問題
+- VenturaスタックでVPN、DNSに繋がらないバグの[解決法](https://support.bitrise.io/hc/en-us/articles/13934073652243-VPN-and-DNS-issues-with-macOS-Ventura-stacks)
+
+## Androidスタックについて
+DockerはAndroidステックに内蔵されています。
+スタック内容のDockerイメージはQuayで公開されています。
+また、[自作のDockerイメージの使用](https://devcenter.bitrise.io/en/infrastructure/using-your-own-docker-image.html)も可能です。
+![](assets/2/6-1.png)
+[詳細](https://devcenter.bitrise.io/en/infrastructure/build-stacks/the-android-linux-docker-environment.html)
+
+# ワークフロー サンプルレシピ
+- [iOS](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-ios-apps.html)
+- [flutter](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-cross-platform-apps.html)
+
+
+# キャッシュの最適化
+
+
+# [Rebuild/Advance紹介](https://devcenter.bitrise.io/en/builds/environment-variables.html#setting-a-custom-env-var-when-starting-a-build)
+# [リモートアクセス](https://devcenter.bitrise.io/en/builds/build-data-and-troubleshooting/remote-access.html)
+
+# [ローカルデバッグコマンドツール紹介-Bitrise CLI](https://devcenter.bitrise.io/en/builds/build-data-and-troubleshooting/debugging-your-build-on-your-own-machine.html)
+ローカルのDocker環境でビルドを実行する
+https://devcenter.bitrise.io/en/infrastructure/running-your-build-locally-in-docker.html
