@@ -2,9 +2,59 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+
+
+
 void main() {
   runApp(MyApp());
 }
+Future<Word> fetchWord() async {
+  Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Access-Control-Allow-Origin': 'https://san-random-words.vercel.app',
+    };
+  
+
+  final response = await http
+      .get(Uri.parse('https://san-random-words.vercel.app/'), headers: requestHeaders);
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    List<dynamic> parsedListJson = jsonDecode(response.body) as List;
+    List< Word > wordlist= List< Word >.from(parsedListJson.map((i) => Word.fromJson(i as Map<String, dynamic>)));
+    return wordlist[0];
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load Word');
+  }
+}
+
+class Word {
+  final String word;
+  final String definition;
+  final String pronunciation;
+
+  const Word({
+    required this.word,
+    required this.definition,
+    required this.pronunciation,
+  });
+
+  factory Word.fromJson(Map<String, dynamic> json) {
+    return Word(
+      word: json['word'].toString(),
+      definition: json['definition'].toString(),
+      pronunciation: json['pronunciation'].toString(),
+    );
+  }
+}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -27,14 +77,21 @@ class MyApp extends StatelessWidget {
 
 //State stores data & methods related to data changes for the app
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
+  var current = WordPair.random().toString();
 
-  void getNext() {
-    current = WordPair.random();
+  void getNext({bool useAPI=false}) {
+    current = WordPair.random().toString();
+    if (useAPI) {
+      //get word from API
+      fetchWord().then((result) {
+        current = result.word;
+      });
+    }
     notifyListeners();
   }
 
-  var favorites = <WordPair>{};
+
+  var favorites = <String>{};
   
   void toggleFavorite() {
     if (favorites.contains(current)) {
@@ -123,24 +180,26 @@ class FavoritePage extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Text('You have ${favorites.length} favorites:'),
         ),
-        for (var pair in favorites)
+        for (var word in favorites)
           ListTile(
             leading: Icon(Icons.favorite),
-            title: Text(pair.asLowerCase),
+            title: Text(word),
           )
       ]
     );
   }
 }
 
+
+
 class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var pair = appState.current;
+    var word = appState.current;
 
     IconData icon;
-    if (appState.favorites.contains(pair)) {
+    if (appState.favorites.contains(word)) {
       icon = Icons.favorite;
     } else {
       icon = Icons.favorite_border;
@@ -150,7 +209,7 @@ class GeneratorPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          BigCard(pair: pair),
+          BigCard(word: word),
           SizedBox(height: 10),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -169,6 +228,13 @@ class GeneratorPage extends StatelessWidget {
                 },
                 child: Text('Next'),
               ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  appState.getNext(useAPI:true);
+                },
+                child: Text('Next via API'),
+              ),
             ],
           ),
         ],
@@ -180,10 +246,10 @@ class GeneratorPage extends StatelessWidget {
 class BigCard extends StatelessWidget {
   const BigCard({
     super.key,
-    required this.pair,
+    required this.word,
   });
 
-  final WordPair pair;
+  final String word;
 
   @override
   Widget build(BuildContext context) {
@@ -197,9 +263,9 @@ class BigCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Text(
-          pair.asLowerCase,
+          word,
           style: style,
-          semanticsLabel: pair.asPascalCase,
+          semanticsLabel: word,
           ),
       ),
     );
