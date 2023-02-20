@@ -145,6 +145,7 @@ FlutterプロジェクトでもiOSの自動プロビジョンニングプロフ�
 ---
 
 ![](assets/2/i-7.png)
+
 `Flutter Test`ステップの後ろのに`Flutter Build`ステップを追加します。
 - Platform: ios
 - Artifact type: app
@@ -282,7 +283,7 @@ Workflows:
 - homebrewのデフォルトパッケージインストール先は`/usr/local/bin/`, `/usr/local/share/`, `/usr/local/lib/`になります。（Intelスタックは`/usr/local/`）
 - IntelスタックとM1スタックのキャッシュは使い回せないので、切り替えた後、キャッシュの削除を忘れずに。（App設定画面→Buildタブ）
 - [M1スタックにAndroidエミュレータはサポートしていないため](https://devcenter.bitrise.io/en/infrastructure/build-stacks/apple-silicon-m1-stacks.html#android-emulation-is-unavailable)、Firebase Test Labステップの使用が必要
-- Montereyのフレームワークによるビルドハング不具合が報告されています。、こちらはVentura以上のバージョンの使用、もしくは[解消方法]](https://devcenter.bitrise.io/en/infrastructure/build-stacks/apple-silicon-m1-stacks.html#hanging-builds-issue)を使うことをお勧めします。
+- Montereyのフレームワークによるビルドハング不具合が報告されています。こちらはVentura以上のバージョンの使用、もしくは[解消方法](https://devcenter.bitrise.io/en/infrastructure/build-stacks/apple-silicon-m1-stacks.html#hanging-builds-issue)を使うことをお勧めします。
 
 ## Xcodeスタックに関する既存問題
 - VenturaスタックでVPN、DNSに繋がらないバグの[解決法](https://support.bitrise.io/hc/en-us/articles/13934073652243-VPN-and-DNS-issues-with-macOS-Ventura-stacks)
@@ -299,26 +300,26 @@ DockerはAndroidステックに内蔵されています。
 - [flutter](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-cross-platform-apps.html)
 
 
-# キャッシュについて、
-Bitriseでの保存されているすべてのキャッシュの有効期間は７日間です。
-デフォルトブランチ（main）のキャッシュはキャッシュがない時にのフォールバックです。
+# キャッシュ
+Bitriseで保存されているすべてのキャッシュの有効期間は７日間です。
+キャッシュがない時に、cache pullステップを実行すると、デフォルトブランチ（main）のキャッシュはフォールバックとして使われます。
 
-現状Bitriseでのキャッシュ機能は２種類あります：
-- ブランチベース
-- キーベース
-## ブランチベースのキャッシュ機能
-Bitrise.io Cache:Pull （ダウンロード）とBitrise.io Cache:Push（アップロード）ステップを使用します。
+Bitriseでのキャッシュ機能は２種類あります：
+- ブランチベース（Legacy）
+- キーベース（Beta）
+## ブランチベースのキャッシュ
+**Bitrise.io Cache:Pull** （ダウンロード）と**Bitrise.io Cache:Push**（アップロード）ステップを使用します。
 
 ![](assets/2/6-2.png)
 
 
-## [キーベースのキャッシュ機能(Beta)](https://devcenter.bitrise.io/en/builds/caching/key-based-caching.html#accessing-key-based-cache-archives)
-キーベースのキャッシュ機能Restore Cache（ダウンロード）とSave Cache（アップロード）ステップを使用
+## [キーベースのキャッシュ(Beta)](https://devcenter.bitrise.io/en/builds/caching/key-based-caching.html#accessing-key-based-cache-archives)
+キーベースのキャッシュ機能は**Restore Cache**（ダウンロード）と**Save Cache**（アップロード）ステップを使用します。
 
 ステップの入力変数にキーを指定し、特定のキャッシュの読み込みと書き出しを行います。
 ![](assets/2/6-3.png)
 
-また、Cocoapod, SPM,NPMとGradleのための専用キャッシュステップも備わっています：
+また、Cocoapods, SPM,NPMとGradle用の専用キャッシュステップも備わっています：
 - **Save Cocoapods Cache** と **Restore Cocoapods Cache**
 - **Save SPM Cache** と **Restore SPM Cache**
 - **Save NPM Cache** と **Restore NPM Cache**

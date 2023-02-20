@@ -15,54 +15,53 @@ SSH接続に使うコマンドとパスワードと、VNC接続（Screenshareと
 ![](assets/3/1-1.png)
 
 # [Bitrise CLI](https://app.bitrise.io/cli)
-もう一つワークフローのデバッグに役に立つツールは**Bitrise CLI**です。
-ローカル環境でワークフローを実行したり、
+失敗ビルドの原因調査やワークフローのデバッグに役に立つツールは**Bitrise CLI**です。
+ローカル環境でワークフロー実行やアプリの設定変更ができます。
 
-CLIのインストール
+## CLIのインストール
 ```
 brew update && brew install bitrise
 ```
 ローカルでワークフローの実行方法
 - アプリのbitrise.ymlをローカルに置きます
 - コマンド`bitrise run <ワークフロー名>`で実行します。
-ビルドが失敗する時、デバッグの際、
-
 
 [詳細](https://devcenter.bitrise.io/en/bitrise-cli.html)
 
-ローカルのDocker環境でビルドを実行する
-https://devcenter.bitrise.io/en/infrastructure/running-your-build-locally-in-docker.html
 
+他には、Android用の[ローカルDocker環境設定](https://devcenter.bitrise.io/en/infrastructure/running-your-build-locally-in-docker.html)もできます。
 
-# テスト
-
-## Flutter analyzer
-[Flutter Analyzeステップ](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-cross-platform-apps/-flutter--run-dart-analyzer.html)でflutterプロジェクトのFlutterの静的解析（Dart Analyzer & Linter）をします。
-（`analysis_options.yaml`ファイルにAnalyzerのルール定義が必要です。）
-[参照](https://tech-blog.rakus.co.jp/entry/20210518/flutter)
 
 # [Flutterテスト](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#testing-a-flutter-app)
-FlutterのUnit、Widget、Integrationテストは全部このFlutter testのステップで実行できます。
+FlutterのUnit、Widget、[Integrationテスト](https://docs.flutter.dev/testing/integration-tests#project-setup)は基本的に、全部**Flutter test**ステップで実行できます。
 ![](assets/3/2-1.png)
 - Step's test result directory:テスト結果ファイルの格納場所、Deploy to Bitrise.io ステップを追加すると、結果は**Artifactタブ**に格納されます。
-
 - Generate code coverage files: コードカバレッジは自動作成できます。
 - Additional parameter:　flutter testコマンドで追加のパラメータ入力できます。
 
 テスト結果とコードカバレッジファイルパスはステップ詳細の下の環境変数に設定されます：
 ![](assets/3/2-2.png)
 
-[Flutter 結合テストについて](https://docs.flutter.dev/testing/integration-tests#project-setup)
+
+## Flutter analyzer
+[Flutter Analyzeステップ](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-cross-platform-apps/-flutter--run-dart-analyzer.html)でflutterプロジェクトの静的解析（Dart Analyzer & Linter）をします。
+
+`analysis_options.yaml`ファイルにAnalyzerのルール定義が必要です。
+
+[参照](https://tech-blog.rakus.co.jp/entry/20210518/flutter)
 
 # デバイステスト
+
 Bitriseでは[Firebase Test Lab](https://firebase.google.com/docs/test-lab)というクラウドベースのアプリテストプラットフォームてデバイステストを行っています。
+
 ## [iOSデバイステスト](https://devcenter.bitrise.io/en/testing/device-testing-for-ios.html)
 
 ワークフローに**Xcode Build for testing for iOS**ステップと**iOS Device Testing**ステップを追加します。
 ![](assets/3/3-0.png)
 - Project Path: Xcodeworkspaceのパス
 - Scheme：iOSプロジェクトのスキーム
-- Device Destination：デバイスDestination、ローカル環境でコマンド：`xcodebuild -showdestinations -workspace Runner.xcworkspace -scheme Runner` で一覧が見れます。
+- Device Destination：デバイスDestination、この後実機でテストするので、`generic/platform=iOS`を設定します。
+ローカル環境でコマンド：`xcodebuild -showdestinations -workspace Runner.xcworkspace -scheme Runner` で一覧が見れます。
 ```
 $ xcodebuild -showdestinations -workspace Runner.xcworkspace -scheme Runner
 
@@ -73,6 +72,7 @@ User defaults from command line:
 { platform:iOS Simulator, id:6D25E324-807F-451C-87EF-1442C0642954, OS:16.2, name:iPhone 14 Pro }
 ...
 ```
+
 ![](assets/3/3-1.png)
 - Automatic code signing methodの設定も忘れずに。
 
@@ -85,7 +85,7 @@ User defaults from command line:
 
 ## 結果
  Details & Add-ons タブ→**Test Reports**をクリックします。
-
+![](assets/3/5-0.png)
  Test Summary タブでテスト結果一覧が表示されます。
 
 ## [Androidデバイステスト](https://devcenter.bitrise.io/en/testing/device-testing-for-android.html)
