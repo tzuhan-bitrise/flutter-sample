@@ -10,16 +10,6 @@ workflows:
       Next steps:
       - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
     steps:
-    - activate-ssh-key@4: {}
-    - git-clone@7: {}
-    - flutter-installer@0:
-        inputs:
-        - version: 3.7.0
-        - is_update: 'false'
-    - cache-pull@2: {}
-    - flutter-test@1:
-        inputs:
-        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
     - file-downloader@1:
         title: Key Property File Downloader
         inputs:
@@ -38,8 +28,12 @@ workflows:
     - sign-apk@1:
         inputs:
         - use_apk_signer: 'true'
-    - cache-push@2: {}
-    - deploy-to-bitrise-io@2: {}
+    - virtual-device-testing-for-android@1: {}
+    before_run:
+    - set-up-environment
+    - flutter-lint-test
+    after_run:
+    - finishing-build
   deploy:
     description: |
       Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
@@ -50,26 +44,73 @@ workflows:
       - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
       - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
     steps:
-    - activate-ssh-key@4: {}
-    - git-clone@7: {}
-    - certificate-and-profile-installer@1: {}
-    - flutter-installer@0:
+    - manage-ios-code-signing@1:
         inputs:
-        - is_update: 'false'
-    - cache-pull@2: {}
-    - flutter-analyze@0:
+        - project_path: "$BITRISE_IOS_PROJECT_PATH"
+        - scheme: "$BITRISE_IOS_SCHEME"
+        - apple_service_connection: apple-id
+    - file-downloader@1:
+        title: Key Property File Downloader
         inputs:
-        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
-    - flutter-test@1:
+        - destination: "$BITRISE_SOURCE_DIR/android/key.properties"
+        - source: "$BITRISEIO_key_property_URL"
+    - file-downloader@1:
+        title: Keystore File Downloader
         inputs:
-        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+        - destination: "$BITRISE_SOURCE_DIR/android/app/upload-keystore.jks"
+        - source: "$BITRISEIO_ANDROID_KEYSTORE_URL"
     - flutter-build@0:
         inputs:
         - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
         - platform: both
         - ios_output_type: archive
+    before_run:
+    - set-up-environment
+    after_run:
+    - finishing-build
+  device-test:
+    description: |
+      Builds project and runs tests.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
+    steps:
+    - flutter-test@1:
+        inputs:
+        - generate_code_coverage_files: 'yes'
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    before_run:
+    - set-up-environment
+    after_run:
+    - finishing-build
+  finishing-build:
+    description: |
+      Builds project and runs tests.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
+    steps:
     - cache-push@2: {}
     - deploy-to-bitrise-io@2: {}
+    - slack@3:
+        run-if: false
+        is_always_run: false
+    before_run: []
+  flutter-lint-test:
+    description: |
+      Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
+
+      If you build for iOS, make sure to set up code signing secrets on Bitrise for a successful build.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
+      - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
+    steps:
+    - flutter-analyze@0:
+        inputs:
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    before_run: []
+    after_run: []
   ios:
     description: |
       Builds project and runs tests.
@@ -77,22 +118,12 @@ workflows:
       Next steps:
       - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
     steps:
-    - activate-ssh-key@4: {}
-    - git-clone@7: {}
-    - flutter-installer@0:
-        inputs:
-        - version: 3.7.0
-        - is_update: 'false'
     - manage-ios-code-signing@1:
         inputs:
         - scheme: "$BITRISE_IOS_SCHEME"
         - project_path: "$BITRISE_IOS_PROJECT_PATH"
         - apple_team_id: DT2C2FZ7U2
         - apple_service_connection: apple-id
-    - cache-pull@2: {}
-    - flutter-test@1:
-        inputs:
-        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
     - flutter-build@0:
         inputs:
         - platform: ios
@@ -101,8 +132,20 @@ workflows:
         - scheme: "$BITRISE_IOS_SCHEME"
         - automatic_code_signing: apple-id
         - project_path: "$BITRISE_IOS_PROJECT_PATH"
-    - cache-push@2: {}
-    - deploy-to-bitrise-io@2: {}
+    - xcode-build-for-test@2:
+        inputs:
+        - scheme: "$BITRISE_IOS_SCHEME"
+        - automatic_code_signing: apple-id
+        - apple_team_id: DT2C2FZ7U2
+        - project_path: "$BITRISE_IOS_PROJECT_PATH"
+    - virtual-device-testing-for-ios@1:
+        inputs:
+        - test_devices: iphone13pro,15.2,en,portrait
+    before_run:
+    - set-up-environment
+    - flutter-lint-test
+    after_run:
+    - finishing-build
   primary:
     description: |
       Builds project and runs tests.
@@ -110,18 +153,76 @@ workflows:
       Next steps:
       - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
     steps:
+    - flutter-test@1:
+        inputs:
+        - generate_code_coverage_files: 'yes'
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    before_run:
+    - set-up-environment
+    after_run:
+    - finishing-build
+  set-up-environment:
+    description: |
+      Builds project and runs tests.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
+    steps:
     - activate-ssh-key@4: {}
-    - git-clone@7: {}
+    - git-clone@8: {}
     - flutter-installer@0:
         inputs:
         - version: 3.7.0
         - is_update: 'false'
     - cache-pull@2: {}
+  flutter-test1:
+    description: |
+      Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
+
+      If you build for iOS, make sure to set up code signing secrets on Bitrise for a successful build.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
+      - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
+    steps:
     - flutter-test@1:
         inputs:
+        - tests_path_pattern: UnitTest1.dart
         - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
-    - cache-push@2: {}
-    - deploy-to-bitrise-io@2: {}
+    before_run: []
+    after_run: []
+  flutter-test2:
+    description: |
+      Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
+
+      If you build for iOS, make sure to set up code signing secrets on Bitrise for a successful build.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
+      - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
+    steps:
+    - flutter-test@1:
+        inputs:
+        - tests_path_pattern: UnitTest2.dart
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    before_run: []
+    after_run: []
+  flutter-test3:
+    description: |
+      Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
+
+      If you build for iOS, make sure to set up code signing secrets on Bitrise for a successful build.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
+      - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
+    steps:
+    - flutter-test@1:
+        inputs:
+        - tests_path_pattern: UnitTest3.dart
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    before_run: []
+    after_run: []
 meta:
   bitrise.io:
     stack: osx-xcode-14.2.x-ventura
@@ -148,3 +249,4 @@ trigger_map:
 - pull_request_source_branch: ios*
   pull_request_target_branch: main
   workflow: ios
+

@@ -60,8 +60,8 @@
 - [oAuth1認証必要の場合のテスト](https://softwareengineering.stackexchange.com/questions/413182/store-oauth-2-0-tokens-for-use-in-testing-and-ci-cd)
 - 2FA認証必要の場合 (2FA auth is not really suited for CI systems as there is no user interaction)
 - 位置情報関連のテスト[参考１](https://github.com/udevsharold/locsim), [参考２](https://itnext.io/simulate-debugging-location-in-ios-24496cbbc9d9)
-- [現在時刻に依存するテスト](https://www.bitrise.io/integrations/steps/set-macos-timezone)
 - API関連のテスト [(Mock API使用を推薦)](https://stackoverflow.com/questions/55409978/how-to-mock-http-request-in-flutter-integration-test)
+- [現在時刻に依存するテスト](https://www.bitrise.io/integrations/steps/set-macos-timezone)
 - [音声関連のテスト](https://discuss.bitrise.io/t/how-to-create-a-virtual-audio-output-device-on-mac-os-stacks/1119)
 
 ## 4. ビルド
@@ -74,7 +74,6 @@
 - [Build Pipeline(Beta)の紹介](https://devcenter.bitrise.io/en/builds.html)
 - [Pipeline editor](https://damienbitrise.github.io/Pipeline-UI/)
 - [flutterビルド](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app)
-- [Build Artifact]()
 
 ## 5. デプロイ
 - [デプロイ設定](https://devcenter.bitrise.io/en/deploying.html)
