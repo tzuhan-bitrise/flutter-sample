@@ -22,7 +22,7 @@
 
 **前提条件**
 - Firebase側で、すでに既存のFirebaseプロジェクトが存在し、パッケージ名が登録されている状態。[参照](https://firebase.google.com/docs/app-distribution/android/distribute-console?apptype=apk)
-- ローカルで firebase login:ci を実行して、Firebase からトークンを取得して、FIREBASE_TOKENという名前でBitriseにSecretとして追加します。
+- ローカルで `firebase login:ci` を実行して、Firebase からトークンを取得して、FIREBASE_TOKENという名前でBitriseにSecretとして追加します。
 - Firebaseプロジェクトの General Settings ページから Firebase App ID を取得し、 `Firebase App Distribution` ステップ に入力します。
 ![](assets/5/0-3.jpeg)
 ![](assets/5/0-4.png)
@@ -36,20 +36,24 @@ Huawei AppGalleryへデプロイするための手順はリンクのページを
 
 
 # iOS
-Export method(エクスポートメソット)
-- development: 開発用、あらかじめにProvisioning Profile（Apple developer portal）にUDIDを登録しているテストデバイスのみに、インストールできます。
-- ad-hoc: テスト用、Distribution署名書を用いたビルド。Apple developer portalにUDIDを登録していないデバイスでも`Deploy to Bitrise`ステップの`public install page`からipaのインストールが可能です。
-- app-store: TestflightとApp storeに配布用。
+iOSのDistribution method：
+- development: 開発用、このDistribution methodを使ったアプリは、あらかじめにProvisioning ProfileにデバイスのUDIDを登録したデバイスにしかインストールできません。
+- ad-hoc: テスト用、Distribution署名書を用いたビルドです。Apple developer portalにUDIDを登録していないデバイスにでもインストールが可能です。`Deploy to Bitrise`ステップの`public install page`からipaをインストールします。
+- app-store: TestflightとApp Storeに配布用。
+- enterprise: Apple developer Enterpriseプログラムに入り、企業内アプリ配布用
 
 ## [App Store Connect/Testflightへのデプロイ](https://devcenter.bitrise.io/en/deploying/ios-deployment/deploying-an-ios-app-to-app-store-connect.html)
 
 App Store Connectにデプロイするためのステップは二種類あります：
-- Deploy to App Store Connect - Application Loader: .ipaまたは.pkgバイナリファイルをApp Store Connectにアップロードするだけのステップ。
+- Deploy to App Store Connect - Application Loader: .ipaまたは.pkgバイナリファイルをApp Store Connectにアップロードするだけのステップです。
 - Deploy to App Store Connect: アップロード以外、下記の設定もできます：
-    - App Storeにアプリをアップロードしてレビューを受ける。
+    - App Storeにアプリをアップロードしてレビューを受けます。
     - 3つの異なるプラットフォーム（iOS、OS X、AppleTVOS）のアプリをサポートしています。
     - スクリーンショットやリリースノートなどのとアプリのメタデータをバイナリと一緒にアップロードするよう設定できます。
 ![](assets/5/0-5.png)
+
+`Deploy to App Store Connect` ステップは`fastlane deliver`を使ってAppを配布しているので、メタデータはあらかじめにGitレポジトリに設定する必要があります。
+詳しい設定方法は [fastlane deliver](https://docs.fastlane.tools/actions/deliver/) のドキュメントをご覧ください。
 
 [サンプルワークフロー](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-ios-apps/-ios--deploy-to-app-store-connect---testflight.html)
 
@@ -59,19 +63,19 @@ FirebaseにiOSアプリをデプロイするため、`Firebase App Distribution`
 
 **前提条件**
 - Firebase側で、すでに既存のFirebaseプロジェクトが存在し、Bundle ID名が登録されている状態。[参照](https://firebase.google.com/docs/app-distribution/ios/distribute-console)
-- ローカルで firebase login:ci を実行して、Firebase からトークンを取得して、FIREBASE_TOKENという名前でBitriseにSecretとして追加します。
+- ローカルで `firebase login:ci` を実行して、Firebase からトークンを取得して、FIREBASE_TOKENという名前でBitriseにSecretとして追加します。
 - Firebaseプロジェクトの General Settings ページから Firebase App ID を取得し、 `Firebase App Distribution` ステップ に入力します。
 
 [サンプルワークフロー](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-ios-apps/-ios--deploy-to-firebase-app-distribution.html)
 
-## [Visudal Studio App Centerへのデプロイ](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-ios-apps/-ios--deploy-to-visual-studio-app-center.html)
-Visudal Studio App Centerへデプロイするための手順はリンクのページをご覧ください。
+## [Visual Studio App Centerへのデプロイ](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-ios-apps/-ios--deploy-to-visual-studio-app-center.html)
+Visual Studio App Centerへデプロイするための手順はリンクのページをご覧ください。
 
 # [Release Management(Beta)紹介](https://devcenter.bitrise.io/en/deploying/release-management.html)
 BitriseのRelease Managementはアプリのリリースプロセスの管理ツールです。
 
 リリースに関連するすべてのタスクのワンストップソリューションとしての役割も果たします。
-リリースブランチの作成やTestFlightへのリリース候補のアップロードなど、リリース関連のタスクを全てBitriseのRelease Managementツールで処理できます。
+リリースブランチの作成やTestFlightへのアップロードなど、リリース関連のタスクを全てBitriseのRelease Managementツールで処理できます。
 
 Beta版は現在全てのユーザに公開しているので、ぜひご使用後のご感想をお聞かせ下さい。
 
@@ -79,6 +83,7 @@ Beta版は現在全てのユーザに公開しているので、ぜひご使用�
 - 現状では`Native iOSプロジェクト`と`クロスプラットフォームのiOSプロジェクト`が対象です。
 （プロジェクトタイプが`iOS`、もしくは`react-native`, `flutter`）
 ![](assets/5/1-0.png)
+- AdminアカウントとプロジェクトのApple service cedentialにp8キーの設定が必須。
 - Release Managementを使うには、ワークフローで作成した`.xcarchive`ファイルからipaを作成するので、`Xcode Archive & Export for iOS` ステップと `Deploy to Bitrise.io - Apps, Logs, Artifacts` ステップの使用は強く推薦します。
 
 ダッシュボードの上のリンクからRelease Managementに遷移し、iOSプロジェクトを選択します。
@@ -98,7 +103,7 @@ App を選択して、Release versionを入れます。
 ![](assets/5/1-3-1.png)
 
 また、Release managementはSlackとの連携も対応しています。
-NotificationタブでSlack webhookを設定すると、自動的にリリースの進捗メッセージがSlackチャネルに届きます。
+Notification settingsタブでSlack webhookを設定すると、自動的にリリースの進捗メッセージがSlackチャネルに届きます。
 ![](assets/5/1-3-2.png)
 
 [連携方法](https://devcenter.bitrise.io/en/deploying/release-management/configuring-a-release.html#enabling-slack-notifications-for-release-management-events)

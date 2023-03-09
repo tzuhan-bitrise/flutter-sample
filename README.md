@@ -7,6 +7,13 @@
 
 - `Chap*.md`：各章のトレーニング資料
 
+- 2/09 Chap1 60 mins
+- 2/13 Chap2 59 mins
+- 2/20 Chap3 35 mins
+- 3/06 Chap4 62 mins
+- 3/09 Chap5 62 mins
+- 3/13 Chap6  mins
+
 
 # カリキュラム
 ## 1. [Bitriseの基本紹介](Chap1.md)
