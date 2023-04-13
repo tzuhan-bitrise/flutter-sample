@@ -2,36 +2,6 @@
 format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: flutter
-pipelines:
-  unit_test:
-    stages:
-    - setup: {}
-    - build: {}
-    - test: {}
-  test-pipeline:
-    stages:
-    - stage1: {}
-    - stage2: {}
-stages:
-  setup:
-    workflows:
-    - set-up-environment: {}
-  build:
-    workflows:
-    - android: {}
-    - ios: {}
-  test:
-    workflows:
-    - flutter-test1: {}
-    - flutter-test2: {}
-    - flutter-test3: {}
-  stage1:
-    workflows:
-    - test1: {}
-  stage2:
-    should_always_run: true
-    workflows:
-    - test2: {}
 workflows:
   android:
     description: |
@@ -59,39 +29,6 @@ workflows:
         inputs:
         - use_apk_signer: 'true'
     - virtual-device-testing-for-android@1: {}
-    - firebase-app-distribution@0: {}
-    before_run:
-    - set-up-environment
-    - flutter-lint-test
-    after_run:
-    - finishing-build
-  android-deploy:
-    description: |
-      Builds project and runs tests.
-
-      Next steps:
-      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
-    steps:
-    - file-downloader@1:
-        title: Key Property File Downloader
-        inputs:
-        - destination: "$BITRISE_SOURCE_DIR/android/key.properties"
-        - file_permission: '644'
-        - source: "$BITRISEIO_key_property_URL"
-    - file-downloader@1:
-        title: Keystore File Downloader
-        inputs:
-        - destination: "$BITRISE_SOURCE_DIR/android/app/upload-keystore.jks"
-        - file_permission: '600'
-        - source: "$BITRISEIO_ANDROID_KEYSTORE_URL"
-    - flutter-build@0:
-        inputs:
-        - platform: android
-    - sign-apk@1:
-        inputs:
-        - use_apk_signer: 'true'
-    - virtual-device-testing-for-android@1: {}
-    - google-play-deploy@3: {}
     before_run:
     - set-up-environment
     - flutter-lint-test
@@ -174,6 +111,70 @@ workflows:
         - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
     before_run: []
     after_run: []
+  ios:
+    description: |
+      Builds project and runs tests.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
+    steps:
+    - manage-ios-code-signing@1:
+        inputs:
+        - scheme: "$BITRISE_IOS_SCHEME"
+        - project_path: "$BITRISE_IOS_PROJECT_PATH"
+        - apple_team_id: DT2C2FZ7U2
+        - apple_service_connection: apple-id
+    - flutter-build@0:
+        inputs:
+        - platform: ios
+    - xcode-archive@4:
+        inputs:
+        - scheme: "$BITRISE_IOS_SCHEME"
+        - automatic_code_signing: apple-id
+        - project_path: "$BITRISE_IOS_PROJECT_PATH"
+    - xcode-build-for-test@2:
+        inputs:
+        - scheme: "$BITRISE_IOS_SCHEME"
+        - automatic_code_signing: apple-id
+        - apple_team_id: DT2C2FZ7U2
+        - project_path: "$BITRISE_IOS_PROJECT_PATH"
+    - virtual-device-testing-for-ios@1:
+        inputs:
+        - test_devices: iphone13pro,15.2,en,portrait
+    before_run:
+    - set-up-environment
+    - flutter-lint-test
+    after_run:
+    - finishing-build
+  primary:
+    description: |
+      Builds project and runs tests.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
+    steps:
+    - flutter-test@1:
+        inputs:
+        - generate_code_coverage_files: 'yes'
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
+    before_run:
+    - set-up-environment
+    after_run:
+    - finishing-build
+  set-up-environment:
+    description: |
+      Builds project and runs tests.
+
+      Next steps:
+      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
+    steps:
+    - activate-ssh-key@4: {}
+    - git-clone@8: {}
+    - flutter-installer@0:
+        inputs:
+        - version: 3.7.0
+        - is_update: 'false'
+    - cache-pull@2: {}
   flutter-test1:
     description: |
       Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
@@ -222,120 +223,6 @@ workflows:
         - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
     before_run: []
     after_run: []
-  ios:
-    description: |
-      Builds project and runs tests.
-
-      Next steps:
-      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
-    steps:
-    - manage-ios-code-signing@1:
-        inputs:
-        - scheme: "$BITRISE_IOS_SCHEME"
-        - project_path: "$BITRISE_IOS_PROJECT_PATH"
-        - apple_team_id: DT2C2FZ7U2
-        - apple_service_connection: apple-id
-    - flutter-build@0:
-        inputs:
-        - platform: ios
-    - xcode-archive@4:
-        inputs:
-        - scheme: "$BITRISE_IOS_SCHEME"
-        - automatic_code_signing: apple-id
-        - project_path: "$BITRISE_IOS_PROJECT_PATH"
-    - xcode-build-for-test@2:
-        inputs:
-        - scheme: "$BITRISE_IOS_SCHEME"
-        - automatic_code_signing: apple-id
-        - apple_team_id: DT2C2FZ7U2
-        - project_path: "$BITRISE_IOS_PROJECT_PATH"
-    - aws-device-farm-runner@0: {}
-    - deploy-to-itunesconnect-deliver@2: {}
-    before_run:
-    - set-up-environment
-    - flutter-lint-test
-    after_run:
-    - finishing-build
-  primary:
-    description: |
-      Builds project and runs tests.
-
-      Next steps:
-      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
-    steps:
-    - flutter-test@1:
-        inputs:
-        - generate_code_coverage_files: 'yes'
-        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
-    before_run:
-    - set-up-environment
-    after_run:
-    - finishing-build
-  set-up-environment:
-    description: |
-      Builds project and runs tests.
-
-      Next steps:
-      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
-    steps:
-    - activate-ssh-key@4: {}
-    - git-clone@8: {}
-    - flutter-installer@0:
-        inputs:
-        - version: 3.7.0
-        - is_update: 'false'
-    - cache-pull@2: {}
-  test1:
-    description: 'Workflow to fail
-
-      '
-    before_run: []
-    after_run: []
-    steps:
-    - script@1:
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
-            set -o pipefail
-            # debug log
-            set -x
-
-            # write your script here
-            echo "Hello World!"
-
-            # or run a script from your repository, like:
-            # bash ./path/to/script.sh
-            # not just bash, e.g.:
-            # ruby ./path/to/script.rb
-            # failed workflow
-            cd temp/
-  test2:
-    description: workflow to work
-    before_run: []
-    after_run: []
-    steps:
-    - script@1:
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
-            set -o pipefail
-            # debug log
-            set -x
-
-            # write your script here
-            echo "Hello World!"
-
-            # or run a script from your repository, like:
-            # bash ./path/to/script.sh
-            # not just bash, e.g.:
-            # ruby ./path/to/script.rb
-            ls ./
 meta:
   bitrise.io:
     stack: osx-xcode-14.2.x-ventura
@@ -362,3 +249,4 @@ trigger_map:
 - pull_request_source_branch: ios*
   pull_request_target_branch: main
   workflow: ios
+
