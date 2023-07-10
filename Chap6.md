@@ -130,7 +130,7 @@ BitriseはSlackとの統合をサポートしています。`Send a Slack messag
 
 
 # [Insights](https://devcenter.bitrise.io/en/insights.html)
-Insights は、去年12月にリリースした Bitrise ビルドのパフォーマンスを詳細に示すメトリクスを追跡できるモニタリングツールです。
+Insights は、去年12月にリリースした Bitrise ビルドのパフォーマンスメトリクスを追跡できるモニタリングツールです。
 ## [機能紹介](https://devcenter.bitrise.io/en/insights/getting-started-with-insights.html)
 
 - Overview：該当workspaceに登録されているアプリらの各メトリクスの概要。右上で時間の単位や期間を変更できます
